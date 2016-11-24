@@ -1,0 +1,119 @@
+#ifndef TREEMAPWIDGET_H
+#define TREEMAPWIDGET_H
+
+#include <vector>
+#include <deque>
+
+
+#include <QtWidgets/QMainWindow>
+
+#include <QBrush>
+#include <QPen>
+
+class Rectangle
+{
+public:
+    Rectangle();
+    Rectangle(const int in_x, const int in_y, const int in_w, const int in_h);
+    ~Rectangle();
+
+// variables
+    double m_x;
+    double m_y;
+    double m_w;
+    double m_h;
+};
+
+class TreeMapDataItem
+{
+public:
+    TreeMapDataItem();
+    TreeMapDataItem( const std::string in_key, const double in_primaryData, const double in_secondaryData);
+
+    TreeMapDataItem(const TreeMapDataItem& rhs);
+    TreeMapDataItem& operator=(const TreeMapDataItem& rhs);
+    ~TreeMapDataItem();
+
+    bool operator > (const TreeMapDataItem& rhs) const
+    {
+        return m_primaryData > rhs.m_primaryData;
+    }
+
+    bool operator < (const TreeMapDataItem& rhs) const
+    {
+        return m_primaryData < rhs.m_primaryData;
+    }
+
+public:
+    void ResetGeometry();
+    void SetGeometry(const double in_x, const double in_y, const double in_w, const double in_h);
+
+public:
+    std::string m_key;      // primary key
+    double m_primaryData;   // use to derive area of a data item
+    double m_secondaryData; // use to derive color of a data item
+
+    double m_x;
+    double m_y;
+    double m_w;
+    double m_h;
+
+};
+
+class TreeMapWidget : public QWidget
+{
+    Q_OBJECT
+
+public:
+    TreeMapWidget();
+    ~TreeMapWidget();
+
+// operations
+public:
+    void Initialize();
+    void Show();
+    void AddData( const std::string in_key, const double in_primaryData, const double in_secondaryData );
+
+    void SetSimulationData();
+    void SetConstantColors();
+    void SetInterfaceSettings();
+
+// partition algorithm
+    void splitLayout( std::deque<TreeMapDataItem>& in_list, Rectangle r, bool layoutToggle=true);
+    double weight( std::deque<TreeMapDataItem>& in_list );
+    TreeMapDataItem* getDataItem(const std::string in_key);
+
+// variables
+    std::deque<TreeMapDataItem>   m_treeMapData;    // A deque offers constant-time insert() and erase() at the front of the container
+    Rectangle m_renderArea;
+
+    int m_prototypeNumber;
+
+protected:
+    virtual void    paintEvent(QPaintEvent *in_event);
+    QTimer*         m_guiUpdateTimer;   // Timer for redrawing the GUI (todo should be feature of QSageApplication
+
+protected slots:
+    void UpdateLayout();
+
+private:
+
+    // colors
+    QColor m_colorDarkGrey;
+    QColor m_colorGrey;
+    QColor m_colorLightGrey;
+
+    // drawing tools
+    QPen m_pen;
+    QBrush m_brush;
+
+
+    // UI settings
+    int m_margin;
+    bool m_colorMode;   // true = colorful, false = nearly black&white(does not reflect secondary data)
+
+
+
+};
+
+#endif // TREEMAPWIDGET_H

@@ -1,0 +1,372 @@
+#include "Widgets/treemapwidget.h"
+
+#include <QtGui>
+#include <algorithm>
+#include <sstream>
+
+
+Rectangle::Rectangle()
+{
+    m_x = 0;
+    m_y = 0;
+    m_w = 0;
+    m_h = 0;
+}
+
+Rectangle::Rectangle(const int in_x, const int in_y, const int in_w, const int in_h)
+{
+    m_x = in_x;
+    m_y = in_y;
+    m_w = in_w;
+    m_h = in_h;
+}
+
+Rectangle::~Rectangle()
+{
+}
+
+TreeMapDataItem::TreeMapDataItem()
+{
+    ResetGeometry();
+}
+
+TreeMapDataItem::TreeMapDataItem( const std::string in_key, const double in_primaryData, const double in_secondaryData)
+    : m_key(in_key),
+    m_primaryData(in_primaryData),
+    m_secondaryData(in_secondaryData)
+{
+    ResetGeometry();
+}
+
+TreeMapDataItem::~TreeMapDataItem()
+{
+}
+
+TreeMapDataItem& TreeMapDataItem::operator = ( TreeMapDataItem const& rhs)
+{
+    if(&rhs == this)
+    {
+        return *this;
+    }
+    m_key = rhs.m_key;
+    m_primaryData = rhs.m_primaryData;
+    m_secondaryData = rhs.m_secondaryData;
+    m_x = rhs.m_x;
+    m_y = rhs.m_y;
+    m_w = rhs.m_w;
+    m_h = rhs.m_h;
+    return *this;
+}
+
+TreeMapDataItem::TreeMapDataItem(TreeMapDataItem const& rhs)
+{
+    m_key = rhs.m_key;
+    m_primaryData = rhs.m_primaryData;
+    m_secondaryData = rhs.m_secondaryData;
+    m_x = rhs.m_x;
+    m_y = rhs.m_y;
+    m_w = rhs.m_w;
+    m_h = rhs.m_h;
+}
+
+void TreeMapDataItem::ResetGeometry()
+{
+    m_x = 0;
+    m_y = 0;
+    m_w = 0;
+    m_h = 0;
+}
+
+void TreeMapDataItem::SetGeometry(const double in_x, const double in_y, const double in_w, const double in_h)
+{
+    m_x = in_x;
+    m_y = in_y;
+    m_w = in_w;
+    m_h = in_h;
+}
+
+/************************
+*** TreeMapDataWidget ***
+************************/
+TreeMapWidget::TreeMapWidget()
+    : m_guiUpdateTimer(new QTimer(this))
+{
+    // Initialize();
+
+    // connect(m_guiUpdateTimer, SIGNAL(timeout()), this, SLOT(UpdateLayout()));
+    // m_guiUpdateTimer->start( 5000 );
+}
+
+TreeMapWidget::~TreeMapWidget()
+{
+}
+/*
+void TreeMapWidget::Initialize()
+{
+    setBackgroundRole(QPalette::Base);
+    setAutoFillBackground(true);
+
+    setVisible( false );
+
+    // adjustSize();
+    // move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
+    resize(623, 384);
+
+    SetSimulationData();
+    SetConstantColors();
+    SetInterfaceSettings();
+}
+
+void TreeMapWidget::SetConstantColors()
+{
+    m_colorDarkGrey = QColor( 60, 80, 100 );
+    m_colorGrey = QColor(150, 170, 190, 255);
+    m_colorLightGrey = QColor(220, 225, 230, 255);
+}
+
+void TreeMapWidget::SetInterfaceSettings()
+{
+    m_margin = 1;
+    m_colorMode = false;
+}
+
+void TreeMapWidget::SetSimulationData()
+{
+    m_treeMapData.clear();
+    switch(m_prototypeNumber)
+    {
+        case 1:
+        {
+            m_treeMapData.push_back( TreeMapDataItem("RY.TO", 111310, +3.2) );
+            m_treeMapData.push_back( TreeMapDataItem("TD.TO", 100408, +0.5) );
+            m_treeMapData.push_back( TreeMapDataItem("BNS.TO", 78207, -1.5) );
+            m_treeMapData.push_back( TreeMapDataItem("BMO.TO", 49212, +4.2) );
+            m_treeMapData.push_back( TreeMapDataItem("MFC.TO", 42805, +1.2) );
+            m_treeMapData.push_back( TreeMapDataItem("CP.TO", 39219, -0.3) );
+            m_treeMapData.push_back( TreeMapDataItem("CM.TO", 37510, -1.9) );
+            m_treeMapData.push_back( TreeMapDataItem("PWF.TO", 26049, -4.6) );
+        }
+        break;
+        case 2:
+        default:
+        {
+            m_treeMapData.push_back( TreeMapDataItem("VRX.TO", 8355, -0.5) );
+            m_treeMapData.push_back( TreeMapDataItem("CNR.TO", 6913, +3) );
+            m_treeMapData.push_back( TreeMapDataItem("BB.TO", 710, -3.5) );
+            m_treeMapData.push_back( TreeMapDataItem("SU.TO", 5331, +0.4) );
+            m_treeMapData.push_back( TreeMapDataItem("ENB.TO", 5030, +1) );
+            m_treeMapData.push_back( TreeMapDataItem("CNQ.TO", 4092, 0.02) );
+            m_treeMapData.push_back( TreeMapDataItem("IMO.TO", 3983, 2.01) );
+            m_treeMapData.push_back( TreeMapDataItem("SAP.TO", 1412, +0.4) );
+        }
+        break;
+    }
+
+    if ( !m_treeMapData.empty() )
+    {
+        std::sort(m_treeMapData.rbegin(), m_treeMapData.rend() );   // sort descending order
+    }
+}
+*/
+
+/*
+void TreeMapWidget::UpdateLayout()
+{
+    if ( m_treeMapData.empty() )
+    {
+        return;
+    }
+
+    switch(m_prototypeNumber)
+    {
+        case 1:
+            // static data, do nothing
+            break;
+        case 2:
+        default:
+        {
+            // stochastic simulation: primary data
+            int pickOne = rand()%m_treeMapData.size();
+            double randomDelta = -0.02+((double)rand()/RAND_MAX)*0.04;   // -5k to +5k
+            m_treeMapData[pickOne].m_primaryData *= (1+randomDelta);
+
+            // stochastic simulation: secondary data
+            pickOne = rand()%m_treeMapData.size();
+            randomDelta = -0.1+((double)rand()/RAND_MAX)*0.2;   // -0.1% to 0.1%
+            m_treeMapData[pickOne].m_secondaryData += randomDelta;
+        }
+        break;
+    }
+
+
+    m_renderArea = Rectangle( m_margin , m_margin , width()-m_margin*2 , height()-m_margin*2 );
+    splitLayout( m_treeMapData, m_renderArea );
+
+    // Calling update schedules a repaint event, assuming one hasn't already been scheduled.
+    update();
+}
+*/
+
+
+void TreeMapWidget::paintEvent(QPaintEvent* in_event)
+{
+    QPainter painter(this);
+    // painter.setRenderHints( (QPainter::Antialiasing ) );
+    // | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing) );
+    painter.setPen(m_pen);
+    painter.setBrush(m_brush);
+    painter.setPen(m_colorDarkGrey);
+    painter.setBrush(Qt::NoBrush);
+    const int w = width();
+    const int h = height();
+
+    painter.drawRect(QRect(m_margin, m_margin, width() - m_margin*2, height() - m_margin*2));
+
+    for ( std::deque<TreeMapDataItem>::iterator it = m_treeMapData.begin(); it!=m_treeMapData.end(); ++it)
+    {
+        TreeMapDataItem data = *it;
+
+        // no color mode
+        if ( 0 )
+        {
+            painter.drawRect(QRect(data.m_x, data.m_y, data.m_w, data.m_h));
+        }
+        else
+        {
+            // color mode
+            int colorOffset = abs(data.m_secondaryData)*30;
+            if (colorOffset<0)
+            {
+                colorOffset = 0;
+            }
+            if (colorOffset>255)
+            {
+                colorOffset=255;
+            }
+            QColor m_rectangleColor;
+            if ( data.m_secondaryData > 0 )
+            {
+                m_rectangleColor = QColor(255-colorOffset,255,255-colorOffset);
+            }
+            else if ( data.m_secondaryData < 0 )
+            {
+                m_rectangleColor = QColor(255,255-colorOffset,255-colorOffset);
+            }
+            else {
+                m_rectangleColor = QColor(255, 255, 255);
+            }
+            painter.fillRect(QRect(data.m_x+1, data.m_y+1, data.m_w-1, data.m_h-1), m_rectangleColor);
+            painter.drawRect(QRect(data.m_x, data.m_y, data.m_w, data.m_h));
+        }
+
+        std::stringstream ss;
+        ss << data.m_key << "\n" << /*(int)data.m_primaryData << "\n" <<*/ (double)((int)(data.m_secondaryData*100))/100 << "%";
+        std::string textToDisplay = ss.str();
+
+        if (data.m_w>30 && data.m_h>15)
+        {
+            painter.drawText( data.m_x, data.m_y, data.m_w, data.m_h, (Qt::AlignCenter | Qt::AlignVCenter), QString::fromStdString( textToDisplay ) );
+        }
+    }
+}
+
+void TreeMapWidget::AddData( const std::string in_key, const double in_primaryData, const double in_secondaryData )
+{
+    if ( in_primaryData<=0 )
+    {
+        return;
+    }
+    TreeMapDataItem newData = TreeMapDataItem(in_key, in_primaryData, in_secondaryData);
+    m_treeMapData.push_back(newData);
+}
+
+void TreeMapWidget::Show()
+{
+    setVisible( true );
+
+    m_renderArea = Rectangle( m_margin , m_margin , width()-m_margin*2 , height()-m_margin*2 );
+    splitLayout( m_treeMapData, m_renderArea );
+}
+
+// Split Algorithm
+void TreeMapWidget::splitLayout( std::deque<TreeMapDataItem>& in_list, Rectangle r , bool layoutToggle)
+{
+    if ( in_list.size() == 0 )
+    {
+        return;
+    }
+    if ( in_list.size() == 1 )
+    {
+        TreeMapDataItem* data = getDataItem(in_list.front().m_key);
+        data->SetGeometry(r.m_x, r.m_y, r.m_w, r.m_h);
+        return;
+    }
+
+    std::deque<TreeMapDataItem> list1, list2;
+    list2 = in_list;
+    Rectangle r1, r2;
+    double totalWeight = weight(in_list);
+    double halfSize = totalWeight/2;
+    double weight1 = 0.0;
+    double temp = 0.0;
+
+    // Pick out half the weight into list1, half into list2
+    while (!in_list.empty())
+    {
+        TreeMapDataItem data = list2.front();
+        temp = weight1 + data.m_primaryData;
+
+        // Test if it got worse by picking another item
+        if ( abs(halfSize - temp) >= abs(halfSize - weight1) )
+            break;
+
+        // It was good to pick another
+        list1.push_back(data);
+        list2.pop_front();
+        weight1 = temp;
+    }
+
+    if (layoutToggle)
+    {
+        r1 = Rectangle(r.m_x,   r.m_y,          r.m_w,  r.m_h*weight(list1)/totalWeight);
+        r2 = Rectangle(r.m_x,   r.m_y+r1.m_h,   r.m_w,  r.m_h-r1.m_h);
+    }
+    else {
+        r1 = Rectangle(r.m_x,           r.m_y,  r.m_w*weight(list1)/weight(in_list),    r.m_h);
+        r2 = Rectangle(r.m_x+r1.m_w,    r.m_y,  r.m_w-r1.m_w,                           r.m_h);
+    }
+
+    if (r1.m_w<=0 || r2.m_w<=0 || r1.m_h<=0 || r2.m_h<=0)
+    {
+        return;
+    }
+
+    splitLayout(list1, r1, !layoutToggle);
+    splitLayout(list2, r2, !layoutToggle);
+
+}
+
+double TreeMapWidget::weight( std::deque<TreeMapDataItem>& in_list )
+{
+    double result = 0.0;
+    for(std::deque<TreeMapDataItem>::iterator it = in_list.begin() ; it!=in_list.end(); ++it)
+    {
+        TreeMapDataItem data = *it;
+        result += (data.m_primaryData);
+    }
+    return result;
+}
+
+TreeMapDataItem* TreeMapWidget::getDataItem(const std::string in_key)
+{
+    for ( std::deque<TreeMapDataItem>::iterator it = m_treeMapData.begin(); it!=m_treeMapData.end(); ++it)
+    {
+        TreeMapDataItem data = *it;
+        if (data.m_key.compare(in_key)==0)
+        {
+            return &(*it);
+        }
+    }
+    return NULL;
+}
+
