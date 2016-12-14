@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-
+    system("pause");
 
     std::ifstream infile("C:\\Users\\wiliu\\Desktop\\AlphaB\\AlphaBQt\\grand.csv");
     if (!infile) {

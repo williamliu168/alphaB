@@ -14,13 +14,15 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    Widgets/TreeMapWidget.cpp
+    Widgets/TreeMapWidget.cpp \
+    Widgets/Chart.cpp
 
 HEADERS  += mainwindow.h \
     fundamentaldata.h \
     fundamentaldatapoint.h \
     treemapwidget.h \
-    Widgets/TreeMapWidget.h
+    Widgets/TreeMapWidget.h \
+    Widgets/Chart.h
 
 FORMS    += mainwindow.ui
 

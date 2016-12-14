@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include "Widgets/TreeMapWidget.h"
+#include "Widgets/Chart.h"
 
 namespace Ui {
 class MainWindow;
@@ -21,6 +22,7 @@ private:
     Ui::MainWindow *ui;
 
     ClientWidgets::TreeMapWidget m_treeMapWidget;
+    ClientWidgets::Chart    m_chart;
 
 };
 

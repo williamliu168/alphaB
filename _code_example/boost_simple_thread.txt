@@ -1,0 +1,25 @@
+boost::thread   m_thread;
+
+void Screener::StartProcessingThread()
+{
+    m_thread = boost::thread( &Screener::ProcessingThread, this );
+}
+
+void Screener::ProcessingThread()
+{
+    while(true)
+    {
+        try
+        {
+            boost::recursive_mutex::scoped_lock lock(m_mutex);
+            // ...
+        }
+        catch( std::exception& ex )
+        {
+            // LOG_ERROR
+        }
+        
+        // sleep
+        boost::this_thread::sleep( boost::posix_time::milliseconds( 5000 ) );
+    }
+}
